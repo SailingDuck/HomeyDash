@@ -11,7 +11,7 @@
         {{widget.settings.homeyDevices[device].name}}<br/><small class="text-grey">{{widget.settings.homeyDevices[device].zone.name}}</small>
         </q-item-main>
       <q-item-side right>
-        <q-toggle v-model="widget.settings.homeyDevices[device].capabilitiesObj.onoff.value" @input="switchDevice(device)" color="teal" />
+        <q-toggle v-model="widget.settings.homeyDevices[device].state.onoff" @input="switchDevice(device)" color="teal" />
       </q-item-side>
     </q-item>
   </q-list>
@@ -44,8 +44,8 @@ export default {
       })
     },
     switchDevice (device) {
-      console.log(this.widget.settings.homeyDevices[device].capabilitiesObj.onoff.value)
-      this.widget.settings.homeyDevices[device].setCapabilityValue('onoff', this.widget.settings.homeyDevices[device].capabilitiesObj.onoff.value)
+      console.log(this.widget.settings.homeyDevices[device].state.onoff)
+      this.widget.settings.homeyDevices[device].setCapabilityValue('onoff', this.widget.settings.homeyDevices[device].state.onoff)
     }
   }
 }

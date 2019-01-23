@@ -57,7 +57,7 @@ export default {
     }
     let qs = queryString.parse(window.location.search)
     if (qs.code) {
-      token = await this.$athomCloud.authenticateWithAuthorizationCode()
+      token = await this.$athomCloud.authenticateWithAuthorizationCode(qs.code)
       window.history.pushState({}, '', '/')
     }
     if (!token) {
@@ -69,7 +69,7 @@ export default {
     this.allHomeys = userHomeys
     if (userHomeys.length === 1) {
       this.multipleHomeys = false
-      let firstHomey = await userHomeys[0].authenticate()
+      let firstHomey = await this.$homeyAPI.forHomeyObject(userHomeys[0])
       Vue.prototype.$homey = await firstHomey
       this.loading = false
     } else {

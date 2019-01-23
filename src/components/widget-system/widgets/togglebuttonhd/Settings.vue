@@ -71,7 +71,7 @@ export default {
     async getToggleDevices () {
       let devices = await this.$homey.devices.getDevices()
       _.forEach(devices, device => {
-        if (device.available && (device.capabilitiesObj.onoff || device.capabilitiesObj.button)) {
+        if (device.capabilities.onoff || device.capabilities.button) {
           this.toggledevices.push({
             label: device.name,
             sublabel: device.zone.name,

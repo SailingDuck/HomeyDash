@@ -45,7 +45,7 @@ export default {
     async getDimDevices () {
       let devices = await this.$homey.devices.getDevices()
       _.forEach(devices, device => {
-        if (device.available && device.capabilitiesObj.dim) {
+        if (device.capabilities.dim) {
           this.dimdevices.push({
             label: device.name,
             sublabel: device.zone.name,
