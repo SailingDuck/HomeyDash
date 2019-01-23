@@ -52,7 +52,7 @@ export default {
       await this.$homey.devices.subscribe()
       let devices = await this.$homey.devices.getDevices()
       _.forEach(devices, device => {
-        if (device.capabilities.onoff) {
+        if (device.available && device.capabilitiesObj.onoff) {
           this.widget.settings.homeyDevices[device.id] = device
           let option = {}
           option.label = device.name
