@@ -3,10 +3,10 @@
     <i class="fa fa-thermometer-full fa-2x icon icon-thermometer" aria-hidden="true" v-if="widget.settings.icon"></i>
     <i class="fa fa-tint fa-2x icon icon-humidity" aria-hidden="true" v-if="humidityIcon"></i>
     <div class="data">
-      <span class="temperature">{{ device.state.measure_temperature }}</span>
-      <span class="unit">{{ device.capabilities.measure_temperature.units.en }}</span>
-      <span class="humidity" v-if="widget.settings.humidity">{{ device.state.measure_humidity }}</span>
-      <span class="unit" v-if="widget.settings.humidity">{{ device.capabilities.measure_humidity.units.en }}</span>
+      <span class="temperature">{{ device.capabilitiesObj.measure_temperature.value }}</span>
+      <span class="unit">{{ device.capabilitiesObj.measure_temperature.units }}</span>
+      <span class="humidity" v-if="widget.settings.humidity">{{ device.capabilitiesObj.measure_humidity.value }}</span>
+      <span class="unit" v-if="widget.settings.humidity">{{ device.capabilitiesObj.measure_humidity.units }}</span>
     </div>
     <h5>{{ widget.settings.name }}</h5>
     <small class="text-grey" v-if="widget.settings.room">{{ device.zone.name }}</small>

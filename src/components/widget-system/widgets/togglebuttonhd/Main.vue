@@ -31,13 +31,13 @@ export default {
   methods: {
     async getOnOffDevice () {
       this.device = await this.$homey.devices.getDevice({ id: this.widget.settings.onoff })
-      if (this.device.capabilities.onoff) {
-        this.state = this.device.state.onoff
+      if (this.device.capabilitiesObj.onoff) {
+        this.state = this.device.capabilitiesObj.onoff.value
       }
       await this.$homey.devices.subscribe()
       this.device.on('$state', state => {
-        this.state = this.device.state.onoff
-        if (this.device.state.onoff) {
+        this.state = this.device.capabilitiesObj.onoff.value
+        if (this.device.capabilitiesObj.onoff.value) {
           this.$el.querySelector('.icon').style.backgroundColor = this.widget.settings.oncolor
         } else {
           this.$el.querySelector('.icon').style.backgroundColor = this.widget.settings.offcolor
@@ -45,13 +45,15 @@ export default {
       })
     },
     async switchDevice () {
-      if (this.device.capabilities.onoff) {
-        if (this.state) {
+      if (this.device.capabilitiesObj.onoff) {
+        if (this.device.capabilitiesObj.onoff.value) {
           this.device.setCapabilityValue('onoff', false)
+          this.$el.querySelector('.icon').style.backgroundColor = this.widget.settings.offcolor
         } else {
           this.device.setCapabilityValue('onoff', true)
+          this.$el.querySelector('.icon').style.backgroundColor = this.widget.settings.oncolor
         }
-      } else if (this.device.capabilities.button) {
+      } else if (this.device.capabilitiesObj.button) {
         this.device.setCapabilityValue('button', true)
         this.$el.querySelector('.icon').style.backgroundColor = this.widget.settings.oncolor
         setTimeout(() => {

@@ -63,7 +63,7 @@ export default {
     async getThermometers () {
       let devices = await this.$homey.devices.getDevices()
       _.forEach(devices, device => {
-        if (device.capabilities.measure_temperature) {
+        if (device.available && device.capabilitiesObj.measure_temperature) {
           this.thermometers.push({
             label: device.name,
             sublabel: device.zone.name,
@@ -75,14 +75,14 @@ export default {
     async showHumidity () {
       if (!(this.widget.settings.thermometer instanceof Array)) {
         var device = await this.$homey.devices.getDevice({ id: this.widget.settings.thermometer })
-        if (device.capabilities.measure_humidity) {
+        if (device.available && device.capabilitiesObj.measure_humidity) {
           this.humidity = true
         }
       }
     },
     async hasHumidity (newValue) {
       var device = await this.$homey.devices.getDevice({ id: newValue })
-      if (device.capabilities.measure_humidity) {
+      if (device.available && device.capabilitiesObj.measure_humidity) {
         this.humidity = true
       } else {
         this.humidity = false

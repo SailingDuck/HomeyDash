@@ -33,10 +33,10 @@ export default {
   methods: {
     async getDimDevice () {
       this.device = await this.$homey.devices.getDevice({ id: this.widget.settings.device })
-      this.dim = this.device.state.dim * 100
+      this.dim = this.device.capabilitiesObj.dim.value * 100
       await this.$homey.devices.subscribe()
       this.device.on('$state', state => {
-        this.dim = this.device.state.dim * 100
+        this.dim = this.device.capabilitiesObj.dim.value * 100
       })
     },
     changeDim (newVal) {

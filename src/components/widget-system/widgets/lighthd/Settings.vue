@@ -124,32 +124,38 @@ export default {
     async loadCapabilities () {
       if (!(this.widget.settings.device instanceof Array)) {
         var device = await this.$homey.devices.getDevice({ id: this.widget.settings.device })
-        if (device.capabilities.dim) {
+
+        if (device.capabilitiesObj.dim) {
           this.hasDim = true
         }
-        if (device.capabilities.light_temperature) {
+
+        if (device.capabilitiesObj.light_temperature) {
           this.hasColortemperature = true
         }
-        if (device.capabilities.light_hue) {
+
+        if (device.capabilitiesObj.light_hue) {
           this.hasColor = true
         }
       }
     },
     async checkCapabilities (newValue) {
       var device = await this.$homey.devices.getDevice({ id: newValue })
-      if (device.capabilities.dim) {
+
+      if (device.capabilitiesObj.dim) {
         this.hasDim = true
       } else {
         this.hasDim = false
         this.widget.settings.dim = false
       }
-      if (device.capabilities.light_temperature) {
+
+      if (device.capabilitiesObj.light_temperature) {
         this.hasColortemperature = true
       } else {
         this.hasColortemperature = false
         this.widget.settings.colortemperature = false
       }
-      if (device.capabilities.light_hue) {
+
+      if (device.capabilitiesObj.light_hue) {
         this.hasColor = true
       } else {
         this.hasColor = false

@@ -35,7 +35,7 @@
         </q-item-main>
       </q-item>
     </q-list>
-    <q-color-picker
+    <q-color-picker v-if="widget.settings.color"
       :value="color"
       dark
       color="teal"
@@ -73,12 +73,29 @@ export default {
   methods: {
     async getLight () {
       this.device = await this.$homey.devices.getDevice({ id: this.widget.settings.device })
-      this.state = this.device.state.onoff
-      this.dim = this.device.state.dim
-      this.colortemperature = this.device.state.light_temperature
-      var hue = this.device.state.light_hue * 360
-      var saturation = this.device.state.light_saturation * 100
-      var dimLevel = this.device.state.dim * 100
+      this.state = this.device.capabilitiesObj.onoff.value
+
+      this.dim = 0
+      if (this.device.capabilitiesObj.dim) {
+        this.dim = this.device.capabilitiesObj.dim.value
+      }
+
+      this.colortemperature = 0
+      if (this.device.capabilitiesObj.light_temperature) {
+        this.colortemperature = this.device.capabilitiesObj.light_temperature.value
+      }
+
+      var hue = 0
+      if (this.device.capabilitiesObj.light_hue) {
+        hue = this.device.capabilitiesObj.light_hue.value * 360
+      }
+
+      var saturation = 0
+      if (this.device.capabilitiesObj.light_saturation) {
+        saturation = this.device.capabilitiesObj.light_saturation.value * 100
+      }
+
+      var dimLevel = this.device.capabilitiesObj.dim.value * 100
       this.color = '#' + convert.hsv.hex(hue, saturation, dimLevel).toLowerCase()
 
       await this.$homey.devices.subscribe()
@@ -86,21 +103,26 @@ export default {
         clearTimeout(this.timeout)
         this.timeout = setTimeout(() => {
           this.timeout = null
-          this.state = this.device.state.onoff
-          if (this.device.state.onoff) {
+          this.state = this.device.capabilitiesObj.onoff.value
+
+          if (this.device.capabilitiesObj.onoff.value) {
             this.$el.querySelector('.icon').style.backgroundColor = this.widget.settings.oncolor
           } else {
             this.$el.querySelector('.icon').style.backgroundColor = this.widget.settings.offcolor
           }
-          if (this.device.state.dim !== this.dim) {
-            this.dim = this.device.state.dim
+
+          if (this.device.capabilitiesObj.dim.value !== this.dim) {
+            this.dim = this.device.capabilitiesObj.dim.value
           }
-          if (this.device.state.light_temperature !== this.colortemperature) {
-            this.colortemperature = this.device.state.light_temperature
+
+          this.colortemperature = 0
+          if (this.device.capabilitiesObj.light_temperature.value !== this.colortemperature) {
+            this.colortemperature = this.device.capabilitiesObj.light_temperature.value
           }
-          var hue = this.device.state.light_hue * 360
-          var saturation = this.device.state.light_saturation * 100
-          var dimLevel = this.device.state.dim * 100
+
+          var hue = this.device.capabilitiesObj.light_hue.value * 360
+          var saturation = this.device.capabilitiesObj.light_saturation.value * 100
+          var dimLevel = this.device.capabilitiesObj.dim.value * 100
           var newColor = '#' + convert.hsv.hex(hue, saturation, dimLevel).toLowerCase()
           if (newColor !== this.color) {
             this.color = newColor
