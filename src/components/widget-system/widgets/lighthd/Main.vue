@@ -3,7 +3,7 @@
     <v-touch v-on:tap="switchDevice">
       <div class="icon" v-bind:style="{ maskImage: 'url(' + widget.settings.icon + ')', backgroundColor: widget.settings.offcolor }"></div>
       <h5>{{ widget.settings.name }}</h5>
-      <small class="text-grey" v-if="widget.settings.room">{{ device.zone.name }}</small>
+      <small class="text-grey" v-if="widget.settings.room">{{ zone.name }}</small>
     </v-touch>
     <q-list>
       <q-item v-if="widget.settings.dim">
@@ -52,6 +52,7 @@ export default {
   data () {
     return {
       device: {},
+      zone: {},
       loading: true,
       state: false,
       dim: 0,
@@ -73,6 +74,7 @@ export default {
   methods: {
     async getLight () {
       this.device = await this.$homey.devices.getDevice({ id: this.widget.settings.device })
+      this.zone = await this.$homey.zones.getZone({ id: this.device.zone })
       this.state = this.device.capabilitiesObj.onoff.value
 
       this.dim = 0

@@ -9,7 +9,7 @@
       <span class="unit" v-if="widget.settings.humidity">{{ device.capabilitiesObj.measure_humidity.units }}</span>
     </div>
     <h5>{{ widget.settings.name }}</h5>
-    <small class="text-grey" v-if="widget.settings.room">{{ device.zone.name }}</small>
+    <small class="text-grey" v-if="widget.settings.room">{{ zone.name }}</small>
   </div>
 </template>
 
@@ -19,6 +19,7 @@ export default {
   data () {
     return {
       device: {},
+      zone: {},
       loading: true
     }
   },
@@ -29,7 +30,8 @@ export default {
   methods: {
     async getThermometer () {
       this.device = await this.$homey.devices.getDevice({ id: this.widget.settings.thermometer })
-      await this.$homey.devices.subscribe()
+      this.zone = await this.$homey.zones.getZone({ id: this.device.zone })
+
       this.device.on('$state', state => {
         // console.log(state);
       })

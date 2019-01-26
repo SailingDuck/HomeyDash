@@ -3,7 +3,7 @@
     <div class="onoff" v-if="!loading">
       <div class="icon" v-bind:style="{ maskImage: 'url(' + widget.settings.icon + ')', backgroundColor: widget.settings.offcolor }"></div>
       <h5>{{ widget.settings.name }}</h5>
-      <small class="text-grey" v-if="widget.settings.room">{{ device.zone.name }}</small>
+      <small class="text-grey" v-if="widget.settings.room">{{ zone.name }}</small>
     </div>
   </v-touch>
 </template>
@@ -14,6 +14,7 @@ export default {
   data () {
     return {
       device: {},
+      zone: {},
       loading: true,
       state: false
     }
@@ -23,42 +24,41 @@ export default {
     this.loading = false
 
     setTimeout(() => {
-      if (this.state) {
-        this.$el.querySelector('.icon').style.backgroundColor = this.widget.settings.oncolor
-      }
+      this.updateBackgroundColor(this.state)
     }, 1000)
   },
   methods: {
     async getOnOffDevice () {
       this.device = await this.$homey.devices.getDevice({ id: this.widget.settings.onoff })
+      this.zone = await this.$homey.zones.getZone({ id: this.device.zone })
+
       if (this.device.capabilitiesObj.onoff) {
         this.state = this.device.capabilitiesObj.onoff.value
       }
-      await this.$homey.devices.subscribe()
       this.device.on('$state', state => {
         this.state = this.device.capabilitiesObj.onoff.value
-        if (this.device.capabilitiesObj.onoff.value) {
-          this.$el.querySelector('.icon').style.backgroundColor = this.widget.settings.oncolor
-        } else {
-          this.$el.querySelector('.icon').style.backgroundColor = this.widget.settings.offcolor
-        }
+        this.updateBackgroundColor(this.state)
       })
     },
     async switchDevice () {
       if (this.device.capabilitiesObj.onoff) {
-        if (this.device.capabilitiesObj.onoff.value) {
-          this.device.setCapabilityValue('onoff', false)
-          this.$el.querySelector('.icon').style.backgroundColor = this.widget.settings.offcolor
-        } else {
-          this.device.setCapabilityValue('onoff', true)
-          this.$el.querySelector('.icon').style.backgroundColor = this.widget.settings.oncolor
-        }
+        this.device.setCapabilityValue('onoff', !this.device.capabilitiesObj.onoff.value)
+        setTimeout(() => {
+          this.updateBackgroundColor(this.device.capabilitiesObj.onoff.value)
+        }, 1000)
       } else if (this.device.capabilitiesObj.button) {
         this.device.setCapabilityValue('button', true)
         this.$el.querySelector('.icon').style.backgroundColor = this.widget.settings.oncolor
         setTimeout(() => {
           this.$el.querySelector('.icon').style.backgroundColor = this.widget.settings.offcolor
         }, 2000)
+      }
+    },
+    updateBackgroundColor (state) {
+      if (state) {
+        this.$el.querySelector('.icon').style.backgroundColor = this.widget.settings.oncolor
+      } else {
+        this.$el.querySelector('.icon').style.backgroundColor = this.widget.settings.offcolor
       }
     }
   }

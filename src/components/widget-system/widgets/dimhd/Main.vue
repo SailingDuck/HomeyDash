@@ -12,7 +12,7 @@
       @change="changeDim"
     />
     <h5>{{ widget.settings.name }}</h5>
-    <small class="text-grey" v-if="widget.settings.room">{{ device.zone.name }}</small>
+    <small class="text-grey" v-if="widget.settings.room">{{ zone.name }}</small>
   </div>
 </template>
 
@@ -22,6 +22,7 @@ export default {
   data () {
     return {
       device: {},
+      zone: {},
       loading: true,
       dim: 0
     }
@@ -33,6 +34,8 @@ export default {
   methods: {
     async getDimDevice () {
       this.device = await this.$homey.devices.getDevice({ id: this.widget.settings.device })
+      this.zone = await this.$homey.zones.getZone({ id: this.device.zone })
+
       this.dim = this.device.capabilitiesObj.dim.value * 100
       await this.$homey.devices.subscribe()
       this.device.on('$state', state => {
