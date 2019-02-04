@@ -1,7 +1,7 @@
 <template>
 <v-touch v-on:press="longPress" class="device">
 
-  <div class="icon" v-bind:class="[device.state.alarm_motion ? 'on' : 'off']" :style="'-webkit-mask-image: url('+$homey._baseUrl+device.icon+')'"></div>
+  <div class="icon" v-bind:class="[device.state.alarm_motion ? 'on' : 'off']" :style="'-webkit-mask-image: url('+$homey._baseUrl+device.iconObj.url+')'"></div>
   <div class="name">{{device.name}}</div>
   <div class="info" v-if="device.state.alarm_motion">MOTION DETECTED</div>
   <div class="info" v-else-if="device.state.alarm_tamper">TAMPER DETECTED</div>
@@ -11,12 +11,12 @@
     <span v-if="device.capabilities.measure_temperature && device.state.measure_temperature  && device.capabilities.measure_luminance && device.state.measure_luminance"> - </span>
     <span v-if="device.capabilities.measure_luminance && device.state.measure_luminance">{{device.state.measure_luminance}} {{device.capabilities.measure_luminance.units.en}}</span>
   </div>
-  <div class="battery" v-if="device.capabilities.measure_battery && device.state.measure_battery !== null">
-    <q-icon color="teal" v-if="device.state.measure_battery > 80" name="fa-battery-full" />
-    <q-icon color="teal" v-else-if="device.state.measure_battery < 81 && device.state.measure_battery > 50" name="fa-battery-three-quarters" />
-    <q-icon color="teal" v-else-if="device.state.measure_battery < 51 && device.state.measure_battery > 25" name="fa-battery-half" />
-    <q-icon color="orange" v-else-if="device.state.measure_battery < 56 && device.state.measure_battery > 10" name="fa-battery-quarter" />
-    <q-icon color="red" v-else-if="device.state.measure_battery < 10" name="fa-battery-empty" />
+  <div class="battery" v-if="device.capabilitiesObj.measure_battery && device.capabilitiesObj.measure_battery.value !== null">
+      <q-icon color="teal" v-if="device.capabilitiesObj.measure_battery.value > 80" name="fa-battery-full" />
+      <q-icon color="teal" v-else-if="device.capabilitiesObj.measure_battery.value < 81 && device.capabilitiesObj.measure_battery.value > 50" name="fa-battery-three-quarters" />
+      <q-icon color="teal" v-else-if="device.capabilitiesObj.measure_battery.value < 51 && device.capabilitiesObj.measure_battery.value > 25" name="fa-battery-half" />
+      <q-icon color="orange" v-else-if="device.capabilitiesObj.measure_battery.value < 56 && device.capabilitiesObj.measure_battery.value > 10" name="fa-battery-quarter" />
+      <q-icon color="red" v-else-if="device.capabilitiesObj.measure_battery.value < 10" name="fa-battery-empty" />
   </div>
 
   <q-modal no-backdrop-dismiss style="background-color: rgba(0, 0, 0, 0.85)" class="device-modal" :content-css="{background: 'rgba(0, 0, 0, 0)', boxShadow: '0 0 0 0', border: '0 0 0 0'}" v-model="showModal" minimized>

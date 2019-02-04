@@ -16,27 +16,27 @@
   <div class="row" v-if="$route.params.zone && loaded">
 
     <!-- ONOFF Capabilities -->
-    <div v-if="device.zone.id === $route.params.zone && device.capabilities.onoff && !device.capabilities.alarm_motion && device.class != 'windowcoverings'" class="col-lg-2 col-md-2 col-xs-4 col-sm-2" v-for="device in devices" :key="device.id">
+    <div v-if="device.zone === $route.params.zone && device.ready && device.capabilitiesObj.onoff && !device.capabilitiesObj.alarm_motion && device.class != 'windowcoverings'" class="col-lg-2 col-md-2 col-xs-4 col-sm-2" v-for="device in devices" :key="device.id">
         <onoff :device="device" />
     </div>
 
     <!-- LOCK -->
-    <div v-if="device.zone.id === $route.params.zone && device.capabilities.locked" class="col-lg-2 col-md-2 col-xs-4 col-sm-2" v-for="device in devices" :key="device.id">
+    <div v-if="device.zone === $route.params.zone && device.ready && device.capabilities.locked" class="col-lg-2 col-md-2 col-xs-4 col-sm-2" v-for="device in devices" :key="device.id">
       <lock :device="device" />
     </div>
 
     <!-- MOTION -->
-    <!-- <div v-if="device.zone.id === $route.params.zone && device.capabilities.alarm_motion" class="col-lg-2 col-md-2 col-xs-4 col-sm-2" v-for="device in devices">
+    <!-- <div v-if="device.zone === $route.params.zone && device.ready && device.capabilities.alarm_motion" class="col-lg-2 col-md-2 col-xs-4 col-sm-2" v-for="device in devices">
       <motion :device="device" />
     </div> -->
 
     <!-- SENSOR -->
-    <div v-if="device.zone.id === $route.params.zone && device.class == 'sensor' && !device.capabilities.onoff" class="col-lg-2 col-md-2 col-xs-4 col-sm-2" v-for="device in devices" :key="device.id">
+    <div v-if="device.zone === $route.params.zone && device.ready && device.class == 'sensor'" class="col-lg-2 col-md-2 col-xs-4 col-sm-2" v-for="device in devices" :key="device.id">
         <sensor :device="device" />
     </div>
 
     <!-- WINDOWBLINDS -->
-    <div v-if="device.zone.id === $route.params.zone && device.class == 'windowcoverings'" class="col-lg-2 col-md-2 col-xs-4 col-sm-2" v-for="device in devices" :key="device.id">
+    <div v-if="device.zone === $route.params.zone && device.ready && device.class == 'windowcoverings'" class="col-lg-2 col-md-2 col-xs-4 col-sm-2" v-for="device in devices" :key="device.id">
       <windowblinds :device="device" />
     </div>
 
@@ -77,7 +77,7 @@ export default {
     if (!this.$route.params.zone && window.localStorage.getItem('lastDevicePage')) {
       this.$router.push({ name: 'Devices', params: { zone: window.localStorage.getItem('lastDevicePage') } })
     }
-    await this.$homey.devices.subscribe()
+
     this.devices = await this.$homey.devices.getDevices()
     _.forEach(this.devices, device => {
       device.on('$state', state => {

@@ -1,52 +1,52 @@
 <template>
 <v-touch v-on:press="longPress" v-on:tap="setOnoff" class="device">
   <div v-if="device.class == 'light'" class="icon">
-    <q-icon v-bind:class="[device.state.onoff ? 'on' : 'off']"  name="ion-ios-lightbulb" />
+    <q-icon v-bind:class="[device.capabilitiesObj.onoff.value ? 'on' : 'off']"  name="ion-ios-lightbulb" />
   </div>
   <div v-else-if="device.class == 'socket'" class="icon">
-    <q-icon v-bind:class="[device.state.onoff ? 'on' : 'off']"  name="ion-outlet" />
+    <q-icon v-bind:class="[device.capabilitiesObj.onoff.value ? 'on' : 'off']"  name="ion-outlet" />
   </div>
   <div v-else-if="device.class == 'sensor' && device.capabilities.alarm_motion" class="icon">
-    <q-icon v-bind:class="[device.state.onoff ? 'on' : 'off']"  name="directions-walk" />
+    <q-icon v-bind:class="[device.capabilitiesObj.onoff.value ? 'on' : 'off']"  name="directions-walk" />
   </div>
-  <div v-else class="icon" v-bind:class="[device.state.onoff ? 'on' : 'off']" :style="'-webkit-mask-image: url('+$homey._baseUrl+device.icon+')'"></div>
+  <div v-else class="icon" v-bind:class="[device.capabilitiesObj.onoff.value ? 'on' : 'off']" :style="'-webkit-mask-image: url('+$homey._baseUrl+device.iconObj.url+')'"></div>
   <div class="name">{{device.name}}</div>
-  <div class="info">{{device.state.onoff ? 'ON' : 'OFF'}} <span v-if="device.state.dim"> - {{Number((device.state.dim*100).toFixed(0))}}%</span></div>
-<div class="battery" v-if="device.capabilities.measure_battery && device.state.measure_battery !== null">
-    <q-icon color="teal" v-if="device.state.measure_battery > 80" name="fa-battery-full" />
-    <q-icon color="teal" v-else-if="device.state.measure_battery < 81 && device.state.measure_battery > 50" name="fa-battery-three-quarters" />
-    <q-icon color="teal" v-else-if="device.state.measure_battery < 51 && device.state.measure_battery > 25" name="fa-battery-half" />
-    <q-icon color="orange" v-else-if="device.state.measure_battery < 56 && device.state.measure_battery > 10" name="fa-battery-quarter" />
-    <q-icon color="red" v-else-if="device.state.measure_battery < 10" name="fa-battery-empty" />
+  <div class="info">{{device.capabilitiesObj.onoff.value ? 'ON' : 'OFF'}} <span v-if="device.capabilitiesObj.dim"> - {{Number((device.capabilitiesObj.dim.value*100).toFixed(0))}}%</span></div>
+<div class="battery" v-if="device.capabilitiesObj.measure_battery && device.capabilitiesObj.measure_battery.value !== null">
+    <q-icon color="teal" v-if="device.capabilitiesObj.measure_battery.value > 80" name="fa-battery-full" />
+    <q-icon color="teal" v-else-if="device.capabilitiesObj.measure_battery.value < 81 && device.capabilitiesObj.measure_battery.value > 50" name="fa-battery-three-quarters" />
+    <q-icon color="teal" v-else-if="device.capabilitiesObj.measure_battery.value < 51 && device.capabilitiesObj.measure_battery.value > 25" name="fa-battery-half" />
+    <q-icon color="orange" v-else-if="device.capabilitiesObj.measure_battery.value < 56 && device.capabilitiesObj.measure_battery.value > 10" name="fa-battery-quarter" />
+    <q-icon color="red" v-else-if="device.capabilitiesObj.measure_battery.value < 10" name="fa-battery-empty" />
 </div>
 
   <q-modal no-backdrop-dismiss style="background-color: rgba(0, 0, 0, 0.85)" class="device-modal" :content-css="{background: 'rgba(0, 0, 0, 0)', boxShadow: '0 0 0 0', border: '0 0 0 0'}" v-model="showModal" minimized>
     <q-list no-border>
       <q-list-header class="text-teal">{{device.name}}</q-list-header>
-      <q-item v-if="device.capabilities.dim">
+      <q-item v-if="device.capabilitiesObj.dim">
         <q-item-side class="text-white">
-          {{device.capabilities.dim.title.en}}
+          {{device.capabilitiesObj.dim.title}}
         </q-item-side>
         <q-item-main class="text-right">
-          <q-slider color="teal" v-model="device.state.dim" :min="0" :max="1" :step="0.01" @change="setDim" />
+          <q-slider color="teal" :min="0" :max="1" :step="0.01" :value="device.capabilitiesObj.dim.value" @change="setDim" />
         </q-item-main>
       </q-item>
 
-      <q-item v-if="device.capabilities.onoff">
+      <q-item v-if="device.capabilitiesObj.onoff">
         <q-item-side class="text-white">
-          {{device.capabilities.onoff.title.en}}
+          {{device.capabilitiesObj.onoff.title}}
         </q-item-side>
         <q-item-main class="text-right">
-          <q-toggle icon="fa-power-off" color="teal" v-model="device.state.onoff" @blur="setOnoff" @focus="setOnoff" />
+          <q-toggle icon="fa-power-off" color="teal" v-model="device.capabilitiesObj.onoff.value" @blur="setOnoff" @focus="setOnoff" />
         </q-item-main>
       </q-item>
 
-      <q-item v-for="(value, key) in device.capabilities" :key="device.id + key" v-if="value.getable && !value.setable">
+      <q-item v-for="(value, key) in device.capabilitiesObj" :key="device.id + key" v-if="value.getable && !value.setable">
         <q-item-side class="text-white">
-          {{value.title.en}}
+          {{value.title}}
         </q-item-side>
         <q-item-main class="text-right text-white">
-          <span><span v-if="device.state[key] != null">{{device.state[key]}}</span><span v-else>-</span> <span v-if="value.units">{{value.units.en}}</span></span>
+          <span><span v-if="device.capabilitiesObj[key].value != null">{{device.capabilitiesObj[key].value}}</span><span v-else>-</span> <span v-if="device.capabilitiesObj[key].units">{{device.capabilitiesObj[key].units}}</span></span>
           <!-- <span v-else>-</span> -->
         </q-item-main>
       </q-item>
@@ -78,7 +78,7 @@ export default {
     },
     setOnoff () {
       // _paq.push(['trackEvent', 'Actions', 'On/Off', this.device.class])
-      this.device.setCapabilityValue('onoff', !this.device.state.onoff)
+      this.device.setCapabilityValue('onoff', !this.device.capabilitiesObj.onoff.value)
     },
     setDim: _.debounce(function (value) {
       // _paq.push(['trackEvent', 'Actions', 'Dim', this.device.class])

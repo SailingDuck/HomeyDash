@@ -83,7 +83,6 @@ export default {
       )
     },
     checkHeimdall () {
-      this.$homey.apps.subscribe()
       this.$homey.apps.getApp({
         id: 'com.uc.heimdall'
       })

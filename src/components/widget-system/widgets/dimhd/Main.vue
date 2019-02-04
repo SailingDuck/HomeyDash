@@ -37,7 +37,6 @@ export default {
       this.zone = await this.$homey.zones.getZone({ id: this.device.zone })
 
       this.dim = this.device.capabilitiesObj.dim.value * 100
-      await this.$homey.devices.subscribe()
       this.device.on('$state', state => {
         this.dim = this.device.capabilitiesObj.dim.value * 100
       })

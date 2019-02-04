@@ -6,21 +6,21 @@
     <div v-if="loaded" v-for="zone in sortByIndex(nestedZones)" :key="zone.id">
       <q-item exact v-bind:key="zone.id" :to="{ name: 'Devices', params: { zone: zone.id } }">
         <q-item-side>
-          <img icon :src="'data:image/png;base64,'+zone.icon" style="height:24px;padding:2px;display:inline-block;" />
+          <i class="material-icons" style="height:24px;padding:2px;display:inline-block;">{{ mapZones(zone.icon)}}</i>
         </q-item-side>
         <q-item-main :label="zone.name" />
       </q-item>
       <div v-for="child in sortByIndex(zone.children)" :key="child.id">
         <q-item exact v-bind:key="child.id" :to="{ name: 'Devices', params: { zone: child.id } }">
           <q-item-side style="padding-left:35px;">
-            <img icon :src="'data:image/png;base64,'+child.icon" style="height:24px;padding:2px;display:inline-block;" />
+            <i class="material-icons" style="height:24px;padding:2px;display:inline-block;">{{ mapZones(child.icon)}}</i>
           </q-item-side>
           <q-item-main :label="child.name" />
         </q-item>
         <div v-for="child in sortByIndex(child.children)" :key="child.id">
           <q-item exact v-bind:key="child.id" :to="{ name: 'Devices', params: { zone: child.id } }">
             <q-item-side style="padding-left:70px;">
-              <img icon :src="'data:image/png;base64,'+child.icon" style="height:24px;padding:2px;display:inline-block;" />
+              <i class="material-icons" style="height:24px;padding:2px;display:inline-block;">{{ mapZones(child.icon)}}</i>
             </q-item-side>
             <q-item-main :label="child.name" />
           </q-item>
@@ -83,7 +83,35 @@ export default {
       return sortedView
     },
     sortByIndex (list) {
-      return _.orderBy(list, 'index', 'asc')
+      return _.orderBy(list, 'name', 'asc')
+    },
+    mapZones (icon) {
+      switch (icon) {
+        case 'default':
+          return 'store'
+        case 'bed':
+          return 'hotel'
+        case 'books':
+          return 'book'
+        case 'garden':
+          return 'local_florist'
+        case 'home':
+          return 'home'
+        case 'kitchen':
+          return 'restaurant'
+        case 'living':
+          return 'weekend'
+        case 'roof':
+          return 'eject'
+        case 'shower':
+          return 'grain'
+        case 'stairs-down':
+          return 'arrow_downward'
+        case 'stairs-up':
+          return 'arrow_upward'
+        case 'toilet':
+          return 'wc'
+      }
     }
   }
 }

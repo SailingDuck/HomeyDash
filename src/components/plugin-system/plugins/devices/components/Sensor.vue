@@ -9,24 +9,25 @@
   <div v-else-if="device.class == 'sensor' && device.capabilities.alarm_motion" class="icon">
     <q-icon v-bind:class="[alarmState ? 'on' : 'off']"  name="directions_walk" />
   </div>
-  <div v-else class="icon" v-bind:class="[alarmState ? 'on' : 'off']" :style="'-webkit-mask-image: url('+$homey._baseUrl+device.icon+')'"></div>
+  <div v-else class="icon" v-bind:class="[alarmState ? 'on' : 'off']" :style="'-webkit-mask-image: url('+$homey._baseUrl+device.iconObj.url+')'"></div>
   <div class="name">{{device.name}}</div>
-  <div class="info" v-if="device.state.alarm_motion">MOTION DETECTED</div>
-  <div class="info" color="red" v-else-if="device.state.alarm_contact">CONTACT ALARM</div>
-  <div class="info" v-else-if="device.state.alarm_tamper">TAMPER DETECTED</div>
-  <div class="info" v-else-if="device.state.alarm_battery">BATTERY LOW</div>
-  <div class="info" v-else-if="device.state.alarm_smoke">SMOKE DETECTED</div>
+  <div class="info" v-if="device.capabilitiesObj.alarm_motion && device.capabilitiesObj.alarm_motion.value">MOTION DETECTED</div>
+  <div class="info" color="red" v-else-if="device.capabilitiesObj.alarm_contact && device.capabilitiesObj.alarm_contact.value">CONTACT ALARM</div>
+  <div class="info" v-else-if="device.capabilitiesObj.alarm_tamper && device.capabilitiesObj.alarm_tamper.value">TAMPER DETECTED</div>
+  <div class="info" v-else-if="device.capabilitiesObj.alarm_battery && device.capabilitiesObj.alarm_battery.value">BATTERY LOW</div>
+  <div class="info" v-else-if="device.capabilitiesObj.alarm_smoke &&  device.capabilitiesObj.alarm_smoke.value">SMOKE DETECTED</div>
   <div class="info" v-else >
-    <span style="" v-for="(value, key) in device.capabilities" :key="device.id + key" v-if="value.getable  && value.units && device.state[key] != null">
-      {{device.state[key]}} {{value.units.en}}
+
+    <span style="" v-for="(value, key) in device.capabilitiesObj" :key="device.id + key" v-if="value.getable && value.units && value.value != null">
+      {{device.capabilitiesObj[key].value}} {{value.units}}
     </span>
   </div>
-  <div class="battery" v-if="device.capabilities.measure_battery && device.state.measure_battery !== null">
-    <q-icon color="teal" v-if="device.state.measure_battery > 80" name="fa-battery-full" />
-    <q-icon color="teal" v-else-if="device.state.measure_battery < 81 && device.state.measure_battery > 50" name="fa-battery-three-quarters" />
-    <q-icon color="teal" v-else-if="device.state.measure_battery < 51 && device.state.measure_battery > 25" name="fa-battery-half" />
-    <q-icon color="orange" v-else-if="device.state.measure_battery < 56 && device.state.measure_battery > 10" name="fa-battery-quarter" />
-    <q-icon color="red" v-else-if="device.state.measure_battery < 10" name="fa-battery-empty" />
+  <div class="battery" v-if="device.capabilitiesObj.measure_battery && device.capabilitiesObj.measure_battery.value !== null">
+      <q-icon color="teal" v-if="device.capabilitiesObj.measure_battery.value > 80" name="fa-battery-full" />
+      <q-icon color="teal" v-else-if="device.capabilitiesObj.measure_battery.value < 81 && device.capabilitiesObj.measure_battery.value > 50" name="fa-battery-three-quarters" />
+      <q-icon color="teal" v-else-if="device.capabilitiesObj.measure_battery.value < 51 && device.capabilitiesObj.measure_battery.value > 25" name="fa-battery-half" />
+      <q-icon color="orange" v-else-if="device.capabilitiesObj.measure_battery.value < 56 && device.capabilitiesObj.measure_battery.value > 10" name="fa-battery-quarter" />
+      <q-icon color="red" v-else-if="device.capabilitiesObj.measure_battery.value < 10" name="fa-battery-empty" />
   </div>
 
   <q-modal no-backdrop-dismiss style="background-color: rgba(0, 0, 0, 0.85)" class="device-modal" :content-css="{background: 'rgba(0, 0, 0, 0)', boxShadow: '0 0 0 0', border: '0 0 0 0'}" v-model="showModal" minimized>
@@ -34,17 +35,18 @@
 
       <q-list-header class="text-teal">{{device.name}}</q-list-header>
 
-      <q-item v-for="(value, key) in device.capabilities" :key="device.id + key" v-if="value.getable && !value.setable">
-        <q-item-side class="text-white" v-if="device.capabilitiesOptions[key].title">
-          {{device.capabilitiesOptions[key].title.en}}
-        </q-item-side>
-        <q-item-side class="text-white" v-else>
-          {{value.title.en}}
+      <q-item v-for="(value, key) in device.capabilitiesObj" :key="device.id + key" v-if="value.getable && !value.setable">
+        <!--<q-item-side class="text-white" v-if="device.capabilitiesOptions[key].title">
+          {{device.capabilitiesOptions[key].title}}
+        </q-item-side>-->
+        <q-item-side class="text-white"> <!-- v-else>-->
+          {{value.title}}
         </q-item-side>
         <q-item-main class="text-right text-white">
-          <span v-if="typeof(device.state[key]) === 'boolean' && key.substring(0, 5) == 'alarm'"><q-icon v-if="!device.state[key]" color="green" name="fa-check" /><q-icon v-else color="red" name="fa-exclamation-triangle" /></span>
-          <span v-else> <span v-if="device.state[key] != null">{{device.state[key]}}</span><span v-else>-</span> <span v-if="value.units">{{value.units.en}}</span></span>
-          <!-- <span v-else>-</span> -->
+          <span v-if="typeof(device.capabilitiesObj[key].value) === 'boolean' && key.substring(0, 5) == 'alarm'"><q-icon v-if="!device.capabilitiesObj[key].value" color="green" name="fa-check" /><q-icon v-else color="red" name="fa-exclamation-triangle" /></span>
+          <span v-else>
+            <span v-if="device.capabilitiesObj[key].value != null">{{device.capabilitiesObj[key].value}}</span><span v-else>-</span> <span v-if="device.capabilitiesObj[key].units">{{device.capabilitiesObj[key].units}}</span>
+          </span>
         </q-item-main>
       </q-item>
 

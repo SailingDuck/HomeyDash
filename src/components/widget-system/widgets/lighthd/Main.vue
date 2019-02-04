@@ -100,7 +100,6 @@ export default {
       var dimLevel = this.device.capabilitiesObj.dim.value * 100
       this.color = '#' + convert.hsv.hex(hue, saturation, dimLevel).toLowerCase()
 
-      await this.$homey.devices.subscribe()
       this.device.on('$state', state => {
         clearTimeout(this.timeout)
         this.timeout = setTimeout(() => {

@@ -37,9 +37,7 @@ export default {
         this.widget.settings.homeyDevices[device] = await this.$homey.devices.getDevice({
           id: device
         })
-        console.log(this.widget.settings.homeyDevices)
         this.widget.settings.homeyDevices[device].on('$state', state => {
-          // console.log(state);
         })
       })
     },

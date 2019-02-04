@@ -49,7 +49,6 @@ export default {
   },
   methods: {
     async getSwitches () {
-      await this.$homey.devices.subscribe()
       let devices = await this.$homey.devices.getDevices()
       _.forEach(devices, device => {
         if (device.available && device.capabilitiesObj.onoff) {
